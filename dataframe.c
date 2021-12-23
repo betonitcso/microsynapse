@@ -1,7 +1,12 @@
 #include "dataframe.h"
+#include "debugmalloc.h"
 
 // gets dimensions of a file, returns it in dim struct
 dim get_dim(FILE* file, const char* sep) {
+    if(file == NULL) {
+        perror("[ERR] file is NULL.");
+        exit(103);
+    }
     dim d;char buff[1024];
     int c = 1, r = 1; // cols & rows
 
@@ -24,18 +29,8 @@ dim get_dim(FILE* file, const char* sep) {
     return d;
 }
 
-void read_err(FILE* fp, char* path) {
-    if(fp == NULL) {
-        printf("Cannot read %s", path);
-        exit(0);
-    }
-}
-
-void alloc_err(double** matrix) {
-    if(matrix == NULL) {
-        perror("Failed to allocate memory. ");
-        exit(0);
-    }
+static double min(double x, double y) {
+    return(x > y ? y : x);
 }
 
 // reads csv, turns it into a 2D arr of double type, then returns it in a dataframe
@@ -43,9 +38,10 @@ dataframe read_csv(char* path, char *sep) {
     char buff[1024];
     FILE* fp;
     fp = fopen(path, "r");
-
-    // throws an error if file is not readable
-    read_err(fp, path);
+    if(fp == NULL) {
+        perror("[ERR] file is NULL.");
+        exit(2132);
+    }
 
     dataframe d;
     double** matrix;
@@ -54,18 +50,18 @@ dataframe read_csv(char* path, char *sep) {
     // allocates memory for the matrix that holds the csv's values
     matrix = (double**) malloc(sizeof(double) * d.df_dim.rows);
     for(int i = 0; i < d.df_dim.rows; i++) {
-        for(int j = 0; j < d.df_dim.cols; j++) {
             matrix[i] = (double*) malloc(sizeof(double) * d.df_dim.cols);
-        }
     }
 
-    // throws error if memory allocation fails
-    alloc_err(matrix);
 
     int i = 0;
     fclose(fp);
 
     fp = fopen(path, "r");
+    if(fp == NULL) {
+        perror("[ERR] file is NULL.");
+        exit(2132);
+    }
     while(fgets(buff, 1024, fp)) {
         char* token;
         token = strtok(buff, ",");
@@ -82,4 +78,27 @@ dataframe read_csv(char* path, char *sep) {
     d.matrix = matrix;
 
     return d;
+}
+
+void head(dataframe d) {
+    if(d.matrix == NULL) {
+        printf("Dataframe does not contain any elements.\n");
+    }
+    int el = min(d.df_dim.rows, 5);
+    printf("\n\n");
+    for(int i = 0; i < el; i++) {
+        for(int j = 0; j < d.df_dim.cols; j++) {
+            printf("%f\t", d.matrix[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n\n");
+}
+
+void free_df(dataframe d) {
+    if(d.matrix == NULL) return;
+    for(int i = 0; i < d.df_dim.rows; i++) {
+        free(d.matrix[i]);
+    }
+    free(d.matrix);
 }

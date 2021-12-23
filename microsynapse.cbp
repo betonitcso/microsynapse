@@ -31,9 +31,30 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="dataframe.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="dataframe.h" />
+		<Unit filename="debugmalloc.h" />
+		<Unit filename="file.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="file.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="matrix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="matrix.h" />
+		<Unit filename="microsynapse.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="microsynapse.h" />
+		<Unit filename="net.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="net.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
